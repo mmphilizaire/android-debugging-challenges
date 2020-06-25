@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
@@ -15,6 +16,7 @@ import com.codepath.debuggingchallenges.models.Movie;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import okhttp3.Headers;
@@ -33,11 +35,14 @@ public class MoviesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movies);
         rvMovies = findViewById(R.id.rvMovies);
 
+        movies = new ArrayList<Movie>();
+
         // Create the adapter to convert the array to views
-        MoviesAdapter adapter = new MoviesAdapter(movies);
+        adapter = new MoviesAdapter(movies);
 
         // Attach the adapter to a ListView
         rvMovies.setAdapter(adapter);
+        rvMovies.setLayoutManager(new LinearLayoutManager(this));
 
         fetchMovies();
     }
@@ -46,12 +51,14 @@ public class MoviesActivity extends AppCompatActivity {
     private void fetchMovies() {
         String url = " https://api.themoviedb.org/3/movie/now_playing?api_key=";
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(url, null, new JsonHttpResponseHandler() {
+        client.get(url+API_KEY, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON response) {
                 try {
                     JSONArray moviesJson = response.jsonObject.getJSONArray("results");
-                    movies = Movie.fromJSONArray(moviesJson);
+                    movies.addAll(Movie.fromJSONArray(moviesJson));
+                    Log.d("MoviesActivity", String.format("movie: %s", movies.size()));
+                    adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

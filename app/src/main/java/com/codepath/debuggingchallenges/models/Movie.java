@@ -1,5 +1,7 @@
 package com.codepath.debuggingchallenges.models;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +15,7 @@ public class Movie {
 
     public Movie(JSONObject jsonObject) throws JSONException {
         this.posterUrl = jsonObject.getString("poster_path");
-        this.title = jsonObject.getString("original-title");
+        this.title = jsonObject.getString("original_title");
         this.rating = jsonObject.getDouble("vote_average");
     }
 
@@ -33,11 +35,13 @@ public class Movie {
         ArrayList<Movie> results = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
+                Log.d("Movie", "trying it");
                 results.add(new Movie(jsonArray.getJSONObject(i)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+        Log.d("Movie", "made it"+results.toString());
         return results;
     }
 }
